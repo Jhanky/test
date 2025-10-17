@@ -21,14 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-<<<<<<< HEAD
         'phone',
         'department',
         'position',
         'role_id',
         'is_active',
-=======
->>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
     ];
 
     /**
@@ -49,7 +46,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-<<<<<<< HEAD
         'is_active' => 'boolean',
     ];
 
@@ -89,7 +85,4 @@ class User extends Authenticatable
     {
         return $this->role ? $this->role->permissions : [];
     }
-=======
-    ];
->>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
 }
