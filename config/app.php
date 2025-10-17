@@ -55,7 +55,11 @@ return [
     |
     */
 
+<<<<<<< HEAD
     'url' => env('APP_URL', 'http://localhost'),
+=======
+    'url' => env('APP_URL', 'https://www.apitest.energy4cero.com'),
+>>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
 
     'asset_url' => env('ASSET_URL'),
 
@@ -122,7 +126,11 @@ return [
     |
     */
 
+<<<<<<< HEAD
     'key' => env('APP_KEY'),
+=======
+    'key' => env('APP_KEY','base64:YmJzc2k2dHBxMjZibnJiczR5ZTdqem16emhzd3RraTU='),
+>>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
 
     'cipher' => 'AES-256-CBC',
 

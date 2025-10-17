@@ -38,6 +38,7 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
+<<<<<<< HEAD
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [
@@ -45,6 +46,15 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+=======
+            "@/usr/local/bin/php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@/usr/local/bin/php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@/usr/local/bin/php artisan key:generate --ansi"
+>>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
         ]
     },
     "extra": {
@@ -59,7 +69,12 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+<<<<<<< HEAD
         }
+=======
+        },
+        "cache-dir": "/home/energyce/apitest.energy4cero.com/cache"
+>>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
     },
     "minimum-stability": "stable",
     "prefer-stable": true
