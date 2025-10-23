@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'api/**'],
 
     'allowed_methods' => ['*'],
 
@@ -26,9 +26,15 @@ return [
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
         'http://127.0.0.1:4173',
+        env('APP_URL', 'http://localhost'),
+        parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST), // Extract just the host
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // Allow any origin in production if needed, but this is less secure
+        // Use this only if your application needs to accept requests from any domain
+        // '/.*/' // Uncomment this to allow all origins (not recommended for production)
+    ],
 
     'allowed_headers' => ['*'],
 

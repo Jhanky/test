@@ -126,7 +126,7 @@ class UserController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'department' => 'nullable|string|max:255',
                 'position' => 'nullable|string|max:255',
-                'role_id' => 'required|exists:roles,id',
+                'role_id' => 'required|exists:roles,role_id',
                 'is_active' => 'boolean',
             ], [
                 'name.required' => 'El nombre es obligatorio',
@@ -195,11 +195,11 @@ class UserController extends Controller
                     Rule::unique('users')->ignore($user->id),
                     'ends_with:@energy4cero.com'
                 ],
-                'password' => 'sometimes|string|min:6',
+                'password' => 'nullable|string|min:6',
                 'phone' => 'nullable|string|max:20',
                 'department' => 'nullable|string|max:255',
                 'position' => 'nullable|string|max:255',
-                'role_id' => 'sometimes|required|exists:roles,id',
+                'role_id' => 'sometimes|required|exists:roles,role_id',
                 'is_active' => 'sometimes|boolean',
             ], [
                 'name.required' => 'El nombre es obligatorio',

@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id('role_id');
+        Schema::create('batteries', function (Blueprint $table) {
+            $table->id('battery_id');
             $table->string('name')->unique();
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
-            $table->json('permissions')->nullable();
+            $table->string('model')->unique();
+            $table->string('brand');
+            $table->string('type');
+            $table->decimal('price', 10, 2);
+            $table->decimal('ah_capacity', 8, 2);
+            $table->decimal('voltage', 8, 2);
+            $table->string('technical_sheet_path')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -27,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('batteries');
     }
 };

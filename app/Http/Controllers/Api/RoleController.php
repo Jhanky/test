@@ -109,7 +109,7 @@ class RoleController extends Controller
                 'slug' => 'required|string|max:255|unique:roles,slug|regex:/^[a-z0-9\-]+$/',
                 'description' => 'nullable|string|max:500',
                 'permissions' => 'required|array',
-                'permissions.*' => 'string|exists:permissions,name',
+                'permissions.*' => 'string',
                 'is_active' => 'boolean',
             ], [
                 'name.required' => 'El nombre es obligatorio',
@@ -163,8 +163,8 @@ class RoleController extends Controller
             $role = Role::findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-                'name' => 'sometimes|required|string|max:255|unique:roles,name,' . $role->id,
-                'slug' => 'sometimes|required|string|max:255|unique:roles,slug,' . $role->id . '|regex:/^[a-z0-9\-]+$/',
+                'name' => 'sometimes|required|string|max:255|unique:roles,name,' . $role->role_id . ',role_id',
+                'slug' => 'sometimes|required|string|max:255|unique:roles,slug,' . $role->role_id . ',role_id|regex:/^[a-z0-9\-]+$/',
                 'description' => 'nullable|string|max:500',
                 'permissions' => 'sometimes|required|array',
                 'permissions.*' => 'string',

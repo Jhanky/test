@@ -69,7 +69,7 @@ class AuthController extends Controller
                         'position' => $user->position,
                         'is_active' => $user->is_active,
                         'role' => $user->role ? [
-                            'id' => $user->role->id,
+                            'id' => $user->role->role_id,
                             'name' => $user->role->name,
                             'slug' => $user->role->slug,
                             'description' => $user->role->description,
@@ -136,7 +136,7 @@ class AuthController extends Controller
                         'position' => $user->position,
                         'is_active' => $user->is_active,
                         'role' => $user->role ? [
-                            'id' => $user->role->id,
+                            'id' => $user->role->role_id,
                             'name' => $user->role->name,
                             'slug' => $user->role->slug,
                             'description' => $user->role->description,
@@ -216,7 +216,7 @@ class AuthController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'department' => 'nullable|string|max:255',
                 'position' => 'nullable|string|max:255',
-                'role_id' => 'required|exists:roles,id',
+                'role_id' => 'required|exists:roles,role_id',
             ], [
                 'name.required' => 'El nombre es obligatorio',
                 'email.required' => 'El email es obligatorio',
@@ -265,7 +265,7 @@ class AuthController extends Controller
                         'position' => $user->position,
                         'is_active' => $user->is_active,
                         'role' => $user->role ? [
-                            'id' => $user->role->id,
+                            'id' => $user->role->role_id,
                             'name' => $user->role->name,
                             'slug' => $user->role->slug,
                             'description' => $user->role->description,

@@ -12,18 +12,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-<<<<<<< HEAD
-        $this->call([
-            RoleSeeder::class,
-            UserSeeder::class,
-        ]);
-=======
-        // \App\Models\User::factory(10)->create();
+        // Deshabilitar la verificación de claves foráneas
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
->>>>>>> 04748d080f58e1f195a4a62c28abf35718b01e1d
+        $this->call([
+            DepartmentSeeder::class,
+            CitySeeder::class,
+            RoleTruncateSeeder::class,
+            RoleSeeder::class,
+            UserTruncateSeeder::class,
+            UserSeeder::class,
+            ClientSeeder::class,
+            PanelTruncateSeeder::class,
+            PanelSeeder::class,
+            InverterTruncateSeeder::class,
+            InverterSeeder::class,
+            BatteryTruncateSeeder::class,
+            BatterySeeder::class,
+            QuotationStatusesSeeder::class,
+            QuotationsSeeder::class,
+            QuotationAdditionalCostsTableSeeder::class,
+            QuotationSuppliesTableSeeder::class,
+        ]);
+
+        // Habilitar la verificación de claves foráneas
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
     }
 }

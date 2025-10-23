@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id('role_id');
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
-            $table->json('permissions')->nullable();
-            $table->boolean('is_active')->default(true);
+        Schema::create('cities', function (Blueprint $table) {
+            $table->id('city_id');
+            $table->string('name');
+            $table->unsignedBigInteger('department_id')->nullable();
+            $table->foreign('department_id', 'cities_department_id_foreign')->references('department_id')->on('departments')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('cities');
     }
 };

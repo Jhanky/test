@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id('role_id');
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
+        Schema::create('quotation_statuses', function (Blueprint $table) {
+            $table->id('status_id');
+            $table->string('name', 50);
             $table->text('description')->nullable();
-            $table->json('permissions')->nullable();
+            $table->string('color', 20)->default('#3b82f6'); // Default blue color
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('quotation_statuses');
     }
 };

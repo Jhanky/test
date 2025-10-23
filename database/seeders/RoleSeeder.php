@@ -47,6 +47,25 @@ class RoleSeeder extends Seeder
                     'commercial.update',
                     'commercial.reports',
                     
+                    // Gestión de Clientes
+                    'clients.create',
+                    'clients.read',
+                    'clients.update',
+                    'clients.delete',
+                    
+                    // Gestión de Cotizaciones
+                    'quotations.create',
+                    'quotations.read',
+                    'quotations.update',
+                    'quotations.delete',
+                    
+                    // Gestión de Suministros
+                    'supplies.create',
+                    'supplies.read',
+                    'supplies.update',
+                    'supplies.delete',
+                    'supplies.reports',
+                    
                     // Configuración del Sistema
                     'settings.read',
                     'settings.update',
@@ -61,6 +80,24 @@ class RoleSeeder extends Seeder
                     'support.read',
                     'support.update',
                     'support.delete',
+                    
+                    // Gestión de Paneles
+                    'panels.read',
+                    'panels.create',
+                    'panels.update',
+                    'panels.delete',
+                    
+                    // Gestión de Inversores
+                    'inverters.read',
+                    'inverters.create',
+                    'inverters.update',
+                    'inverters.delete',
+                    
+                    // Gestión de Baterías
+                    'batteries.read',
+                    'batteries.create',
+                    'batteries.update',
+                    'batteries.delete',
                 ],
                 'is_active' => true,
             ],

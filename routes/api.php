@@ -5,6 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\PanelController;
+use App\Http\Controllers\Api\InverterController;
+use App\Http\Controllers\Api\BatteryController;
+use App\Http\Controllers\Api\QuotationController;
+use App\Http\Controllers\Api\QuotationStatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +63,52 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [RoleController::class, 'destroy'])->middleware('permission:roles.delete');
         Route::patch('/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->middleware('permission:roles.update');
     });
+
+    // Gestión de Clientes
+    Route::prefix('clients')->group(function () {
+        Route::get('/', [ClientController::class, 'index'])->middleware('permission:commercial.read');
+        Route::get('/statistics', [ClientController::class, 'statistics'])->middleware('permission:commercial.read');
+        Route::get('/options', [ClientController::class, 'options'])->middleware('permission:commercial.read');
+        Route::get('/{id}', [ClientController::class, 'show'])->middleware('permission:commercial.read');
+        Route::post('/', [ClientController::class, 'store'])->middleware('permission:commercial.update');
+        Route::put('/{id}', [ClientController::class, 'update'])->middleware('permission:commercial.update');
+        Route::delete('/{id}', [ClientController::class, 'destroy'])->middleware('permission:commercial.update');
+        Route::patch('/{id}/toggle-status', [ClientController::class, 'toggleStatus'])->middleware('permission:commercial.update');
+    });
+    
+    // Gestión de Departamentos
+    Route::apiResource('departments', DepartmentController::class);
+    Route::get('departments/region/{region}', [DepartmentController::class, 'byRegion']);
+    
+    // Gestión de Ciudades
+    Route::apiResource('cities', CityController::class);
+    Route::get('cities/department/{departmentId}', [CityController::class, 'byDepartment']);
+
+    // Gestión de Paneles
+    Route::get('panels/statistics', [PanelController::class, 'statistics'])->middleware('permission:panels.read');
+    Route::apiResource('panels', PanelController::class);
+    Route::patch('panels/{id}/toggle-status', [PanelController::class, 'toggleStatus']);
+
+    // Gestión de Inversores
+    Route::get('inverters/statistics', [InverterController::class, 'statistics'])->middleware('permission:inverters.read');
+    Route::apiResource('inverters', InverterController::class);
+    Route::patch('inverters/{id}/toggle-status', [InverterController::class, 'toggleStatus']);
+
+    // Gestión de Baterías
+    Route::get('batteries/statistics', [BatteryController::class, 'statistics'])->middleware('permission:batteries.read');
+    Route::apiResource('batteries', BatteryController::class);
+    Route::patch('batteries/{id}/toggle-status', [BatteryController::class, 'toggleStatus']);
+
+    // Gestión de Cotizaciones
+    Route::apiResource('quotations', QuotationController::class);
+    Route::patch('quotations/{quotation}/status', [QuotationController::class, 'changeStatus']);
+    Route::get('quotations/statistics', [QuotationController::class, 'getStatistics']);
+    Route::get('quotation-statuses', [QuotationController::class, 'getStatuses']);
+    Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'generatePDF']);
+    Route::get('quotations/{quotation}/pdfkit', [QuotationController::class, 'generatePDFKit']);
+
+    // Gestión de Estados de Cotizaciones
+    Route::apiResource('quotation-statuses', QuotationStatusController::class);
 
     // Rutas de prueba
     Route::get('/health', function () {

@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 'phone' => '+57 300 000 0000',
                 'department' => 'Sistema',
                 'position' => 'Administrador',
-                'role_id' => $adminRole->id,
+                'role_id' => $adminRole->role_id,
                 'is_active' => true,
             ],
             [
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
                 'phone' => '+57 300 111 1111',
                 'department' => 'Gerencia',
                 'position' => 'Gerente',
-                'role_id' => $gerenteRole->id,
+                'role_id' => $gerenteRole->role_id,
                 'is_active' => true,
             ],
             [
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
                 'phone' => '+57 300 222 2222',
                 'department' => 'Comercial',
                 'position' => 'Comercial',
-                'role_id' => $comercialRole->id,
+                'role_id' => $comercialRole->role_id,
                 'is_active' => true,
             ],
             [
@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
                 'phone' => '+57 300 333 3333',
                 'department' => 'Contabilidad',
                 'position' => 'Contador',
-                'role_id' => $contadorRole->id,
+                'role_id' => $contadorRole->role_id,
                 'is_active' => true,
             ],
             [
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
                 'phone' => '+57 300 444 4444',
                 'department' => 'Ingeniería',
                 'position' => 'Ingeniero',
-                'role_id' => $ingenieroRole->id,
+                'role_id' => $ingenieroRole->role_id,
                 'is_active' => true,
             ],
             [
@@ -82,7 +82,7 @@ class UserSeeder extends Seeder
                 'phone' => '+57 300 555 5555',
                 'department' => 'Técnico',
                 'position' => 'Técnico',
-                'role_id' => $tecnicoRole->id,
+                'role_id' => $tecnicoRole->role_id,
                 'is_active' => true,
             ],
         ];
