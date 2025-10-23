@@ -8,7 +8,7 @@ The following environment variables should be set in your production environment
 
 ### Laravel Sanctum Configuration
 ```
-SANCTUM_STATEFUL_DOMAINS=www.apitest.energy4cero.com,apitest.energy4cero.com,localhost:3000,localhost:5173,localhost:4173,127.0.0.1:3000,127.0.0.1:5173,127.0.0.1:4173
+SANCTUM_STATEFUL_DOMAINS=www.apitest.energy4cero.com,apitest.energy4cero.com,localhost:3000,localhost:5173,localhost:4173,127.0.0.1:3000,127.0.0.1:5173,127.0.0.1:4173,enterprise.energy4cero.com
 ```
 
 ### Application URL
@@ -17,7 +17,7 @@ APP_URL=https://www.apitest.energy4cero.com
 ```
 
 ### CORS Configuration
-The CORS configuration has been updated to work properly in production. The config/cors.php file now includes the APP_URL in allowed origins and supports local development domains.
+The CORS configuration has been updated to work properly in production. The config/cors.php file now includes the APP_URL in allowed origins and supports local development domains and the deployed frontend domain.
 
 ## Environment File Example
 

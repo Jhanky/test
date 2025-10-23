@@ -32,6 +32,7 @@ return [
         'https://127.0.0.1:3000',
         'https://127.0.0.1:5173',
         'https://127.0.0.1:4173',
+        'https://enterprise.energy4cero.com', // Dominio del frontend desplegado
         env('APP_URL', 'http://localhost'),
         parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST), // Extract just the host
     ],
