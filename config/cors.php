@@ -26,14 +26,20 @@ return [
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
         'http://127.0.0.1:4173',
+        'https://localhost:3000',
+        'https://localhost:5173',
+        'https://localhost:4173',
+        'https://127.0.0.1:3000',
+        'https://127.0.0.1:5173',
+        'https://127.0.0.1:4173',
         env('APP_URL', 'http://localhost'),
         parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST), // Extract just the host
     ],
 
     'allowed_origins_patterns' => [
-        // Allow any origin in production if needed, but this is less secure
-        // Use this only if your application needs to accept requests from any domain
-        // '/.*/' // Uncomment this to allow all origins (not recommended for production)
+        // For development and production flexibility
+        // Add pattern to allow localhost and other common development addresses
+        // '/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/', // This allows localhost with any port
     ],
 
     'allowed_headers' => ['*'],
