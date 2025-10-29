@@ -95,18 +95,28 @@ class Quotation extends Model
     // Métodos
     public function calculateTotals()
     {
-        // Por ahora usar valores por defecto hasta que se creen las tablas de productos
-        $subtotal = $this->subtotal ?? 0;
+        // Calcular el subtotal inicial sumando los totales de productos e ítems
+        $productsTotal = $this->usedProducts->sum('total_value');
+        $itemsTotal = $this->items->sum('total_value');
+        $subtotal = $productsTotal + $itemsTotal;
+        
+        // Calcular gestión comercial sobre el subtotal
         $commercialManagement = $subtotal * $this->commercial_management_percentage;
         $subtotal2 = $subtotal + $commercialManagement;
         
+        // Calcular porcentajes sobre subtotal2
         $administrative = $subtotal2 * $this->administration_percentage;
         $contingency = $subtotal2 * $this->contingency_percentage;
         $profit = $subtotal2 * $this->profit_percentage;
         $ivaProfit = $profit * $this->iva_profit_percentage;
         
+        // Calcular subtotal3
         $subtotal3 = $subtotal2 + $administrative + $contingency + $profit + $ivaProfit;
+        
+        // Calcular retenciones sobre subtotal3
         $withholdings = $subtotal3 * $this->withholding_percentage;
+        
+        // Calcular total del proyecto
         $totalValue = $subtotal3 + $withholdings;
         
         $this->update([

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Battery;
+use Illuminate\Support\Facades\DB;
 
 class BatteryTruncateSeeder extends Seeder
 {
@@ -13,6 +13,6 @@ class BatteryTruncateSeeder extends Seeder
      */
     public function run(): void
     {
-        Battery::truncate();
+        DB::table('batteries')->truncate();
     }
 }

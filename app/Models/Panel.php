@@ -12,8 +12,8 @@ class Panel extends Model
     protected $primaryKey = 'panel_id';
 
     protected $fillable = [
-        'name',
         'model',
+        'brand',
         'power_output',
         'price',
         'technical_sheet_path',

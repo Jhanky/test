@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'api/**'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
@@ -32,15 +32,13 @@ return [
         'https://127.0.0.1:3000',
         'https://127.0.0.1:5173',
         'https://127.0.0.1:4173',
-        'https://enterprise.energy4cero.com', // Dominio del frontend desplegado
+        'https://enterprise.energy4cero.com',
+        env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),
-        parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST), // Extract just the host
     ],
 
     'allowed_origins_patterns' => [
-        // For development and production flexibility
-        // Add pattern to allow localhost and other common development addresses
-        // '/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/', // This allows localhost with any port
+        '/^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/',
     ],
 
     'allowed_headers' => ['*'],

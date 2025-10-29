@@ -17,6 +17,8 @@ class UsedProduct extends Model
         'quotation_id',
         'product_type',
         'product_id',
+        'brand',
+        'model',
         'quantity',
         'unit_price',
         'profit_percentage',

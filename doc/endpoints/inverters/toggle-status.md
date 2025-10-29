@@ -1,0 +1,62 @@
+# Cambiar Estado de Inversor
+
+Activa o desactiva un inversor existente.
+
+## Endpoint
+
+```http
+PATCH /api/inverters/{id}/toggle-status
+```
+
+## Parámetros de la URL
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `id` | integer | ID del inversor a activar/desactivar |
+
+## Encabezados
+
+```http
+Authorization: Bearer <token>
+Accept: application/json
+```
+
+## Respuesta Exitosa
+
+```json
+{
+  "success": true,
+  "data": {
+    "inverter_id": 1,
+    "name": "Inversor Ejemplo",
+    "model": "Modelo XYZ",
+    "power_output_kw": 5.00,
+    "grid_type": "Monofásico",
+    "system_type": "On-Grid",
+    "price": 2500.00,
+    "technical_sheet_path": "technical_sheets/inverters/example.pdf",
+    "is_active": false,
+    "created_at": "2025-10-27T12:00:00.000000Z",
+    "updated_at": "2025-10-27T13:00:00.000000Z"
+  },
+  "message": "Inversor desactivado exitosamente"
+}
+```
+
+## Respuesta de Error
+
+```json
+{
+  "success": false,
+  "message": "Error al cambiar estado del inversor",
+  "error": "No query results for model [App\\Models\\Inverter] 999"
+}
+```
+
+## Códigos de Estado
+
+| Código | Descripción |
+|--------|-------------|
+| 200 | Estado de inversor cambiado exitosamente |
+| 404 | Inversor no encontrado |
+| 500 | Error interno del servidor |

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CitySeeder::class,
             RoleTruncateSeeder::class,
             RoleSeeder::class,
+            ProjectPermissionsSeeder::class,
             UserTruncateSeeder::class,
             UserSeeder::class,
             ClientSeeder::class,

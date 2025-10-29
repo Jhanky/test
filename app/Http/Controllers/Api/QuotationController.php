@@ -13,8 +13,9 @@ use App\Models\Panel;
 use App\Models\Inverter;
 use App\Models\Battery;
 use App\Models\Project;
-use App\Models\ProjectStatus;
-use App\Models\Location;
+use App\Models\ProjectState;
+use App\Models\Department;
+use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -93,8 +94,12 @@ class QuotationController extends Controller
     {
         try {
             $quotation = Quotation::with([
-                'client',
-                'user'
+                'client.department',
+                'client.city',
+                'user',
+                'status',
+                'usedProducts',
+                'items'
             ])->find($id);
 
             if (!$quotation) {
@@ -104,11 +109,101 @@ class QuotationController extends Controller
                 ], 404);
             }
 
-            // Por ahora no hay productos asociados hasta que se creen las tablas
+            // Formatear la respuesta con todos los detalles
+            $formattedResponse = [
+                'quotation_id' => $quotation->quotation_id,
+                'client_id' => $quotation->client_id,
+                'user_id' => $quotation->user_id,
+                'project_name' => $quotation->project_name,
+                'system_type' => $quotation->system_type,
+                'power_kwp' => number_format($quotation->power_kwp, 2, '.', ''),
+                'panel_count' => $quotation->panel_count,
+                'requires_financing' => $quotation->requires_financing ? 1 : 0,
+                'profit_percentage' => number_format($quotation->profit_percentage, 3, '.', ''),
+                'iva_profit_percentage' => number_format($quotation->iva_profit_percentage, 3, '.', ''),
+                'commercial_management_percentage' => number_format($quotation->commercial_management_percentage, 3, '.', ''),
+                'administration_percentage' => number_format($quotation->administration_percentage, 3, '.', ''),
+                'contingency_percentage' => number_format($quotation->contingency_percentage, 3, '.', ''),
+                'withholding_percentage' => number_format($quotation->withholding_percentage, 3, '.', ''),
+                'subtotal' => $quotation->subtotal,
+                'profit' => $quotation->profit,
+                'profit_iva' => $quotation->profit_iva,
+                'commercial_management' => $quotation->commercial_management,
+                'administration' => $quotation->administration,
+                'contingency' => $quotation->contingency,
+                'withholdings' => $quotation->withholdings,
+                'total_value' => $quotation->total_value,
+                'creation_date' => $quotation->created_at,
+                'subtotal2' => $quotation->subtotal2,
+                'subtotal3' => $quotation->subtotal3,
+                'status_id' => $quotation->status_id,
+                'status' => [
+                    'status_id' => $quotation->status->status_id,
+                    'name' => $quotation->status->name,
+                    'description' => $quotation->status->description,
+                    'color' => $quotation->status->color
+                ],
+                'client' => [
+                    'client_id' => $quotation->client->client_id,
+                    'name' => $quotation->client->name,
+                    'nic' => $quotation->client->nic,
+                    'client_type' => $quotation->client->client_type,
+                    'email' => $quotation->client->email,
+                    'phone' => $quotation->client->phone,
+                    'address' => $quotation->client->address,
+                    'monthly_consumption' => $quotation->client->monthly_consumption,
+                    'department' => $quotation->client->department ? [
+                        'department_id' => $quotation->client->department->department_id,
+                        'name' => $quotation->client->department->name,
+                        'region' => $quotation->client->department->region,
+                    ] : null,
+                    'city' => $quotation->client->city ? [
+                        'city_id' => $quotation->client->city->city_id,
+                        'name' => $quotation->client->city->name,
+                        'department_id' => $quotation->client->city->department_id,
+                    ] : null
+                ],
+                'user' => [
+                    'id' => $quotation->user->id,
+                    'name' => $quotation->user->name,
+                    'email' => $quotation->user->email
+                ],
+                'products' => $quotation->usedProducts->map(function ($product) {
+                    return [
+                        'used_product_id' => $product->used_product_id,
+                        'quotation_id' => $product->quotation_id,
+                        'product_id' => $product->product_id,
+                        'product_type' => $product->product_type,
+                        'brand' => $product->brand,
+                        'model' => $product->model,
+                        'quantity' => $product->quantity,
+                        'unit_price' => number_format($product->unit_price, 2, '.', ''),
+                        'partial_value' => number_format($product->partial_value, 2, '.', ''),
+                        'profit_percentage' => number_format($product->profit_percentage, 3, '.', ''),
+                        'profit' => number_format($product->profit, 2, '.', ''),
+                        'total_value' => number_format($product->total_value, 2, '.', '')
+                    ];
+                }),
+                'quotation_items' => $quotation->items->map(function ($item) {
+                    return [
+                        'quotation_item_id' => $item->item_id,
+                        'quotation_id' => $item->quotation_id,
+                        'description' => $item->description,
+                        'item_type' => $item->item_type,
+                        'quantity' => number_format($item->quantity, 2, '.', ''),
+                        'unit' => $item->unit,
+                        'unit_price' => number_format($item->unit_price, 2, '.', ''),
+                        'partial_value' => number_format($item->partial_value, 2, '.', ''),
+                        'profit_percentage' => number_format($item->profit_percentage, 3, '.', ''),
+                        'profit' => number_format($item->profit, 2, '.', ''),
+                        'total_value' => number_format($item->total_value, 2, '.', '')
+                    ];
+                })
+            ];
 
             return response()->json([
                 'success' => true,
-                'data' => $quotation,
+                'data' => $formattedResponse,
                 'message' => 'Cotización obtenida exitosamente'
             ]);
         } catch (\Exception $e) {
@@ -133,6 +228,9 @@ class QuotationController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
+            // Agregar log para depuración
+            \Log::info('📥 Recibiendo datos de cotización del frontend:', $request->all());
+            
             $validator = Validator::make($request->all(), [
                 'client_id' => 'required|exists:clients,client_id',
                 'user_id' => 'required|exists:users,id',
@@ -164,6 +262,12 @@ class QuotationController extends Controller
             ]);
 
             if ($validator->fails()) {
+                // Agregar log para depuración de errores de validación
+                \Log::error('❌ Error de validación en la creación de cotización:', [
+                    'errors' => $validator->errors(),
+                    'data' => $request->all()
+                ]);
+                
                 return response()->json([
                     'success' => false,
                     'message' => 'Error de validación',
@@ -206,6 +310,8 @@ class QuotationController extends Controller
                         'quotation_id' => $quotation->quotation_id,
                         'product_type' => $productData['product_type'],
                         'product_id' => $productData['product_id'],
+                        'brand' => $productData['brand'] ?? null,
+                        'model' => $productData['model'] ?? null,
                         'quantity' => $productData['quantity'],
                         'unit_price' => $productData['unit_price'],
                         'profit_percentage' => $productData['profit_percentage'],
@@ -239,16 +345,78 @@ class QuotationController extends Controller
                 }
             }
 
+            // Cargar las relaciones necesarias para el cálculo
+            $quotation->load(['usedProducts', 'items']);
+            
             // Calcular todos los totales de la cotización automáticamente
             $quotation->calculateTotals();
             
             // Cargar datos completos para la respuesta
             $quotation->load(['client', 'user']);
             
+            // Formatear la respuesta según el nuevo formato requerido
+            $formattedResponse = [
+                'quotation_id' => $quotation->quotation_id,
+                'client_id' => $quotation->client_id,
+                'user_id' => $quotation->user_id,
+                'project_name' => $quotation->project_name,
+                'system_type' => $quotation->system_type,
+                'power_kwp' => number_format($quotation->power_kwp, 2, '.', ''),
+                'panel_count' => $quotation->panel_count,
+                'requires_financing' => $quotation->requires_financing ? 1 : 0,
+                'profit_percentage' => number_format($quotation->profit_percentage, 3, '.', ''),
+                'iva_profit_percentage' => number_format($quotation->iva_profit_percentage, 3, '.', ''),
+                'commercial_management_percentage' => number_format($quotation->commercial_management_percentage, 3, '.', ''),
+                'administration_percentage' => number_format($quotation->administration_percentage, 3, '.', ''),
+                'contingency_percentage' => number_format($quotation->contingency_percentage, 3, '.', ''),
+                'withholding_percentage' => number_format($quotation->withholding_percentage, 3, '.', ''),
+                'subtotal' => $quotation->subtotal,
+                'profit' => $quotation->profit,
+                'profit_iva' => $quotation->profit_iva,
+                'commercial_management' => $quotation->commercial_management,
+                'administration' => $quotation->administration,
+                'contingency' => $quotation->contingency,
+                'withholdings' => $quotation->withholdings,
+                'total_value' => $quotation->total_value,
+                'creation_date' => $quotation->created_at,
+                'subtotal2' => $quotation->subtotal2,
+                'subtotal3' => $quotation->subtotal3,
+                'status_id' => $quotation->status_id,
+                'products' => $quotation->usedProducts->map(function ($product) {
+                    return [
+                        'used_product_id' => $product->used_product_id,
+                        'quotation_id' => $product->quotation_id,
+                        'product_id' => $product->product_id,
+                        'product_type' => $product->product_type,
+                        'quantity' => $product->quantity,
+                        'unit_price' => number_format($product->unit_price, 2, '.', ''),
+                        'partial_value' => number_format($product->partial_value, 2, '.', ''),
+                        'profit_percentage' => number_format($product->profit_percentage, 3, '.', ''),
+                        'profit' => number_format($product->profit, 2, '.', ''),
+                        'total_value' => number_format($product->total_value, 2, '.', '')
+                    ];
+                }),
+                'quotation_items' => $quotation->items->map(function ($item) {
+                    return [
+                        'quotation_item_id' => $item->item_id,
+                        'quotation_id' => $item->quotation_id,
+                        'description' => $item->description,
+                        'item_type' => $item->item_type,
+                        'quantity' => number_format($item->quantity, 2, '.', ''),
+                        'unit' => $item->unit,
+                        'unit_price' => number_format($item->unit_price, 2, '.', ''),
+                        'partial_value' => number_format($item->partial_value, 2, '.', ''),
+                        'profit_percentage' => number_format($item->profit_percentage, 3, '.', ''),
+                        'profit' => number_format($item->profit, 2, '.', ''),
+                        'total_value' => number_format($item->total_value, 2, '.', '')
+                    ];
+                })
+            ];
+            
             return response()->json([
                 'success' => true,
-                'data' => $quotation,
-                'message' => 'Cotización creada exitosamente con todos los cálculos realizados'
+                'data' => $formattedResponse,
+                'message' => 'Cotización creada exitosamente'
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -375,6 +543,8 @@ class QuotationController extends Controller
                                 'partial_value' => $productData['partial_value'] ?? $usedProduct->partial_value,
                                 'profit' => $productData['profit'] ?? $usedProduct->profit,
                                 'total_value' => $productData['total_value'] ?? $usedProduct->total_value,
+                                'brand' => $productData['brand'] ?? $usedProduct->brand,
+                                'model' => $productData['model'] ?? $usedProduct->model,
                             ]);
                         }
                     }
@@ -516,10 +686,36 @@ class QuotationController extends Controller
             $oldStatusId = $quotation->status_id;
             $quotation->update(['status_id' => $request->status_id]);
 
-            // Crear proyecto automáticamente si el estado cambió a "Contratada" (ID 5)
+            // Verificar si se debe crear proyecto (estado "Contratada" ID 6)
             $projectCreated = null;
-            if ($oldStatusId != 5 && $request->status_id == 5) {
-                $projectCreated = $this->createProjectFromQuotation($quotation);
+            $projectCreationInfo = [
+                'should_create_project' => $request->status_id == 6,
+                'was_just_created' => $oldStatusId != 6 && $request->status_id == 6,
+                'project_already_exists' => false,
+                'project_exists_including_soft_deleted' => false,
+                'creation_attempted' => false,
+                'creation_result' => null
+            ];
+
+            // Intentar crear proyecto si el estado es "Contratada" y no existe proyecto para esta cotización
+            if ($request->status_id == 6) {
+                \Log::info('El estado es "Contratada" para cotización #' . $quotation->quotation_id);
+                
+                // Verificar si existe algún proyecto, incluyendo soft deleted
+                if (Project::where('quotation_id', $quotation->quotation_id)->exists()) {
+                    $projectCreationInfo['project_exists_including_soft_deleted'] = true;
+                }
+                
+                // Solo intentar crear si no existe un proyecto activo
+                if (!Project::where('quotation_id', $quotation->quotation_id)->withoutTrashed()->exists()) {
+                    \Log::info('No existe proyecto activo para cotización #' . $quotation->quotation_id . ', intentando crear uno');
+                    $projectCreated = $this->createProjectFromQuotation($quotation);
+                    $projectCreationInfo['creation_attempted'] = true;
+                    $projectCreationInfo['creation_result'] = $projectCreated ? 'success' : 'failed';
+                } else {
+                    \Log::info('Ya existe proyecto activo para cotización #' . $quotation->quotation_id);
+                    $projectCreationInfo['project_already_exists'] = true;
+                }
             }
 
             $responseData = [
@@ -536,15 +732,26 @@ class QuotationController extends Controller
             // Agregar información del proyecto si se creó
             if ($projectCreated) {
                 $responseData['project_created'] = [
-                    'project_id' => $projectCreated->project_id,
-                    'project_name' => $projectCreated->project_name,
-                    'status' => $projectCreated->status->name
+                    'project_id' => $projectCreated->id,
+                    'project_name' => $projectCreated->name,
+                    'status' => $projectCreated->currentState->name
                 ];
             }
+
+            // Agregar información de diagnóstico del proceso de creación de proyecto
+            $responseData['project_creation_info'] = $projectCreationInfo;
 
             $message = 'Estado de cotización actualizado exitosamente';
             if ($projectCreated) {
                 $message .= ' y proyecto creado automáticamente';
+            } else if ($projectCreationInfo['should_create_project'] && !$projectCreated) {
+                if ($projectCreationInfo['project_already_exists']) {
+                    $message .= '. No se creó proyecto: ya existía uno para esta cotización.';
+                } else if ($projectCreationInfo['creation_attempted'] && $projectCreationInfo['creation_result'] === 'failed') {
+                    $message .= '. No se creó proyecto: error en la creación.';
+                } else {
+                    $message .= '. No se creó proyecto: ya existe un proyecto activo para esta cotización.';
+                }
             }
 
             return response()->json([
@@ -584,40 +791,56 @@ class QuotationController extends Controller
     private function createProjectFromQuotation(Quotation $quotation)
     {
         try {
-            // Verificar que no exista ya un proyecto para esta cotización
-            if (Project::where('quotation_id', $quotation->quotation_id)->exists()) {
-                \Log::warning('Ya existe un proyecto para la cotización #' . $quotation->quotation_id);
+            // Verificar que no exista ya un proyecto activo para esta cotización
+            if (Project::where('quotation_id', $quotation->quotation_id)->withoutTrashed()->exists()) {
+                \Log::warning('Ya existe un proyecto activo para la cotización #' . $quotation->quotation_id);
                 return null;
             }
 
-            // Obtener el estado "Activo" para el proyecto
-            $initialStatus = ProjectStatus::where('name', 'Activo')->first();
+            // Obtener el estado inicial "Preparación de Solicitud" (ID 1) para el proyecto
+            $initialStatus = ProjectState::find(1);
             
             if (!$initialStatus) {
-                // Si no existe el estado, usar el primero disponible
-                $initialStatus = ProjectStatus::first();
+                // Si no existe el estado con ID 1, usar el primer estado disponible
+                $initialStatus = ProjectState::first();
             }
 
-            // Obtener la ubicación del cliente
-            $location = $quotation->client->location ?? Location::first();
+            // Obtener la ubicación del cliente (departamento y ciudad)
+            $department = $quotation->client->department ?? Department::first();
+            $city = $quotation->client->city ?? City::first();
 
-            // Crear el proyecto
+            // Crear el proyecto con todos los campos obligatorios
             $project = Project::create([
-                'quotation_id' => $quotation->quotation_id,
+                'code' => 'PROY-' . str_pad($quotation->quotation_id, 6, '0', STR_PAD_LEFT), // Código único del proyecto
+                'name' => $quotation->project_name, // Nombre del proyecto
+                'description' => 'Proyecto creado automáticamente desde cotización #' . $quotation->quotation_id,
                 'client_id' => $quotation->client_id,
-                'location_id' => $location ? $location->location_id : null,
-                'status_id' => $initialStatus->status_id,
-                'project_name' => $quotation->project_name,
-                'start_date' => now(),
-                'project_manager_id' => $quotation->user_id, // El usuario que creó la cotización será el gerente inicial
-                'notes' => 'Proyecto creado automáticamente al contratar la cotización #' . $quotation->quotation_id . '. Pendiente visita técnica para geolocalización.',
-                // Los campos de georreferenciación se actualizarán después mediante visita técnica
+                'department' => $quotation->client->department->name ?? 'Desconocido', // Departamento del cliente
+                'municipality' => $quotation->client->city->name ?? 'Desconocido', // Municipio del cliente
+                'address' => $quotation->client->address ?? 'Dirección no especificada', // Dirección
+                'capacity_dc' => $quotation->power_kwp * 1.2, // Asumiendo un factor de 1.2 para DC
+                'capacity_ac' => $quotation->power_kwp, // Potencia AC igual a la cotizada
+                'number_panels' => $quotation->panel_count, // Número de paneles de la cotización
+                'number_inverters' => 1, // Número de inversores
+                'contract_value' => $quotation->total_value, // Valor del contrato basado en la cotización
+                'start_date' => now(), // Fecha de inicio actual
+                'estimated_completion_date' => now()->addMonths(3), // Fecha estimada (3 meses)
+                'current_state_id' => $initialStatus->id, // Estado inicial del proyecto
+                'progress_percentage' => 0, // Porcentaje de avance inicial
+                
+                // Campos adicionales de la cotización
+                'quotation_id' => $quotation->quotation_id,
+                'project_type' => $quotation->system_type,
+                'inverter_manufacturer' => null, // Se puede obtener de los productos después
+                'inverter_model' => null, // Se puede obtener de los productos después
+                'responsible_commercial' => $quotation->user->name ?? null,
+                'estimated_margin' => $quotation->profit_percentage * 100,
             ]);
 
-            \Log::info('Proyecto creado exitosamente con ID: ' . $project->project_id . ' para cotización #' . $quotation->quotation_id);
+            \Log::info('Proyecto creado exitosamente con ID: ' . $project->id . ' para cotización #' . $quotation->quotation_id);
             
             // Cargar las relaciones para la respuesta
-            $project->load(['status']);
+            $project->load(['currentState']);
             
             return $project;
             

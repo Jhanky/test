@@ -1,0 +1,80 @@
+{
+  "client_id": 1,
+  "user_id": 1,
+  "project_name": "Instalación Solar Residencial V2", 
+  "system_type": "Interconectado",
+  "power_kwp": 36,
+  "panel_count": 12,
+  "requires_financing": 0,
+  "profit_percentage": 0.05,
+  "iva_profit_percentage": 0.19,
+  "commercial_management_percentage": 0.05,
+  "administration_percentage": 0.03,
+  "contingency_percentage": 0.02,
+  "withholding_percentage": 0.025,
+  "products": [
+    {
+      "product_type": "panel",
+      "product_id": 2,
+      "quantity": 64, 
+      "unit_price": 350000,
+      "profit_percentage": 0.25
+    },
+    {
+      "product_type": "inverter",
+      "product_id": 3,
+      "quantity": 1,
+      "unit_price": 14900000,
+      "profit_percentage": 0.25
+    },
+    {
+      "product_type": "battery",
+      "product_id": 1,
+      "quantity": 2,
+      "unit_price": 4100000,
+      "profit_percentage": 0.25
+    }
+  ],
+  "items": [
+    {
+      "description": "Conductor fotovoltaico",
+      "item_type": "conductor_fotovoltaico",
+      "quantity": 432,
+      "unit": "metro",
+      "unit_price": 4047,
+      "profit_percentage": 0.25
+    },
+    {
+      "description": "Cableado fotovoltaico",
+      "item_type": "material_electrico",
+      "quantity": 180,
+      "unit": "metros",
+      "unit_price": 170000,
+      "profit_percentage": 0.25
+    },
+    {
+      "description": "Estructura de soporte",
+      "item_type": "estructura",
+      "quantity": 12,
+      "unit": "kit",
+      "unit_price": 85000,
+      "profit_percentage": 0.25
+    },
+    {
+      "description": "Mano de obra instalación",
+      "item_type": "mano_obra",
+      "quantity": 180,
+      "unit": "servicio",
+      "unit_price": 185000,
+      "profit_percentage": 0.25
+    },
+    {
+      "description": "Costo de legalización",
+      "item_type": "legalization",
+      "quantity": 1,
+      "unit": "servicio",
+      "unit_price": 7000000,
+      "profit_percentage": 0.25
+    }
+  ]
+}

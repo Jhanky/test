@@ -21,10 +21,7 @@ class PanelController extends Controller
             // Filtros
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('model', 'like', "%{$search}%");
-                });
+                $query->where('model', 'like', "%{$search}%");
             }
 
             if ($request->filled('is_active')) {
@@ -72,12 +69,11 @@ class PanelController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255|unique:panels,name',
                 'model' => 'required|string|max:255|unique:panels,model',
+                'brand' => 'required|string|max:255',
                 'power_output' => 'required|numeric|min:0',
                 'price' => 'required|numeric|min:0',
-                'technical_sheet' => 'nullable|file|mimes:pdf|max:10240', // Max 10MB PDF
-                'is_active' => 'boolean',
+                'technical_sheet' => 'nullable|file|mimes:pdf|max:10240',
             ]);
 
             if ($validator->fails()) {
@@ -142,8 +138,8 @@ class PanelController extends Controller
             $panel = Panel::findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255|unique:panels,name,' . $id . ',panel_id',
                 'model' => 'required|string|max:255|unique:panels,model,' . $id . ',panel_id',
+                'brand' => 'required|string|max:255',
                 'power_output' => 'required|numeric|min:0',
                 'price' => 'required|numeric|min:0',
                 'technical_sheet' => 'nullable|file|mimes:pdf|max:10240',
@@ -191,19 +187,32 @@ class PanelController extends Controller
         }
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
         try {
+            // Verificar si el panel existe
             $panel = Panel::findOrFail($id);
+
+            // Verificar si el panel está siendo usado en algún proyecto
+            // (esto es un ejemplo, deberías adaptarlo a tu lógica de negocio)
+            // $isInUse = $panel->projects()->exists();
+            // if ($isInUse) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'No se puede eliminar el panel porque está siendo usado en proyectos'
+            //     ], 400);
+            // }
 
             // Eliminar ficha técnica si existe
             if ($panel->technical_sheet_path) {
                 Storage::disk('public')->delete($panel->technical_sheet_path);
             }
 
+            // Eliminar el panel
             $panel->delete();
 
             return response()->json([
@@ -211,6 +220,7 @@ class PanelController extends Controller
                 'message' => 'Panel eliminado exitosamente'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error al eliminar panel: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al eliminar el panel',

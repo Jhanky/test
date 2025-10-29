@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Panel;
+use Illuminate\Support\Facades\DB;
 
 class PanelTruncateSeeder extends Seeder
 {
@@ -13,6 +13,6 @@ class PanelTruncateSeeder extends Seeder
      */
     public function run(): void
     {
-        Panel::truncate();
+        DB::table('panels')->truncate();
     }
 }

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Inverter;
+use Illuminate\Support\Facades\DB;
 
 class InverterTruncateSeeder extends Seeder
 {
@@ -13,6 +13,6 @@ class InverterTruncateSeeder extends Seeder
      */
     public function run(): void
     {
-        Inverter::truncate();
+        DB::table('inverters')->truncate();
     }
 }

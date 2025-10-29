@@ -1,0 +1,24 @@
+# Ejemplo de solicitud correcta al endpoint de creación de cotización
+
+# Primero, obtén un token de autenticación (si no lo tienes)
+curl -X POST http://127.0.0.1:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "email": "tu_email@example.com",
+    "password": "tu_contraseña"
+  }'
+
+# Usa el token devuelto en la siguiente solicitud
+
+# Crea una nueva cotización
+curl -X POST http://127.0.0.1:8000/api/quotations \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer TU_TOKEN_AQUI" \
+  -d @ejemplo_cotizacion.json
+
+# Notas importantes:
+# 1. Reemplaza "TU_TOKEN_AQUI" con el token real que obtuviste del login
+# 2. Asegúrate de que el archivo ejemplo_cotizacion.json exista en el mismo directorio
+# 3. La URL debe incluir "/api/" en la ruta
